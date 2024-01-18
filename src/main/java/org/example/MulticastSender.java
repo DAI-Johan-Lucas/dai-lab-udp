@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.DatagramPacket;
 import java.net.InetSocketAddress;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static java.nio.charset.StandardCharsets.*;
 
@@ -23,20 +25,28 @@ class MulticastSender {
         // Créer une instance de Musician avec l'instrument spécifié
         Musician musician = new Musician(instrument);
 
-        try (DatagramSocket socket = new DatagramSocket()) {
-            // Mettre à jour l'activité du musicien
-            musician.setLastActivity(System.currentTimeMillis());
+        // Créer un Timer pour planifier l'envoi périodique (toutes les secondes)
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                try (DatagramSocket socket = new DatagramSocket()) {
+                    // Mettre à jour l'activité du musicien
+                    musician.setLastActivity(System.currentTimeMillis());
 
-            // Construire le message json à envoyer contenant les informations du musicien
-            Gson gson = new Gson();
-            String musicianInfo = gson.toJson(musician);
-            byte[] musicianData = musicianInfo.getBytes(UTF_8);
+                    // Construire le message json à envoyer contenant les informations du musicien
+                    Gson gson = new Gson();
+                    String musicianInfo = gson.toJson(musician);
+                    byte[] musicianData = musicianInfo.getBytes(UTF_8);
 
-            var dest_address = new InetSocketAddress(IPADDR, PORT);
-            var packet = new DatagramPacket(musicianData, musicianData.length, dest_address);
-            socket.send(packet);
-        } catch (IOException ex) {
-            System.out.println(ex.getMessage());
-        }
+                    // Envoyer le message json à l'adresse IP de multicast et au port spécifié
+                    var dest_address = new InetSocketAddress(IPADDR, PORT);
+                    var packet = new DatagramPacket(musicianData, musicianData.length, dest_address);
+                    socket.send(packet);
+                } catch (IOException ex) {
+                    System.out.println(ex.getMessage());
+                }
+            }
+        }, 0, 1000);
     }
 }
