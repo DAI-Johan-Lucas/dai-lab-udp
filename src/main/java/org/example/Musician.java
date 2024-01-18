@@ -1,9 +1,19 @@
 package org.example;
 
-import java.sql.Timestamp;
+import java.util.UUID;
 
 public class Musician {
-    private String uuid;
-    private Instrument instrument;
-    private Timestamp lastActivity;
+    private final String uuid;
+    private final Instrument instrument;
+    private long lastActivity;
+
+    public Musician(Instrument instrument) {
+        this.uuid = UUID.randomUUID().toString();
+        this.instrument = instrument;
+        this.lastActivity = System.currentTimeMillis();
+    }
+
+    public void setLastActivity(long lastActivity) {
+        this.lastActivity = lastActivity;
+    }
 }
