@@ -1,6 +1,7 @@
 package org.Auditor;
 
 import com.google.gson.Gson;
+import org.example.Instrument;
 
 import java.util.*;
 
@@ -25,21 +26,18 @@ public class Auditor {
         treadUdp.start();
     }
 
-    public static class TCPWorker{
+    record TCPWorker(){
         public String process() {
             Gson gson = new Gson();
             return gson.toJson(new ArrayList<>(musicians.values()));
         }
     }
 
-    public static class UDPWorker{
-
-        private record UDPReceiverStruc(String uuid, String sound) {
-
-        }
+    private record UDPReceiverStruct(String uuid, String sound) {}
+    record UDPWorker(){
         public void process(String message){
             Gson gson = new Gson();
-            UDPReceiverStruc rcpt = gson.fromJson(message, UDPReceiverStruc.class);
+            UDPReceiverStruct rcpt = gson.fromJson(message, UDPReceiverStruct.class);
 
             Musician musician = new Musician(rcpt.uuid(),
                     instruments.get(rcpt.sound));
@@ -52,15 +50,14 @@ public class Auditor {
                 timer.schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        cleanMusicians(musician.getUuid());
+                        removeMusician(musician.getUuid());
                     }
                 }, 5000);
             };
-
         }
     }
 
-    public static void cleanMusicians(String uuid){
+    public static void removeMusician(String uuid){
 //        System.out.println("Clean function on : " + uuid);
         Musician musician = musicians.get(uuid);
         if(musician.getLastActivity() + 5000 < System.currentTimeMillis()){
@@ -71,7 +68,7 @@ public class Auditor {
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    cleanMusicians(musician.getUuid());
+                    removeMusician(musician.getUuid());
                 }
             }, (5000 - (System.currentTimeMillis() - musician.getLastActivity())));
         }

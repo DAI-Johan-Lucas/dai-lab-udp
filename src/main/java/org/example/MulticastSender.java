@@ -11,7 +11,7 @@ import java.util.TimerTask;
 import static java.nio.charset.StandardCharsets.*;
 
 class MulticastSender {
-    final static String IPADDR = "239.255.22.5";
+    final static String IPADDR = "localhost";
     final static int PORT = 9904;
 
     public static void main(String[] args) {
@@ -36,7 +36,8 @@ class MulticastSender {
 
                     // Construire le message json à envoyer contenant les informations du musicien
                     Gson gson = new Gson();
-                    String musicianInfo = gson.toJson(musician);
+                    String musicianInfo =
+                            gson.toJson(new UDPSendStruct(musician));
                     byte[] musicianData = musicianInfo.getBytes(UTF_8);
 
                     // Envoyer le message json à l'adresse IP de multicast et au port spécifié
@@ -48,5 +49,16 @@ class MulticastSender {
                 }
             }
         }, 0, 1000);
+    }
+}
+record UDPSendStruct(String uuid, String sound) {
+    public UDPSendStruct(Musician musician) {
+        this(musician.getUuid(), musician.getSound());
+    }
+}
+
+record Musician2(String uuid, Instrument instrument, long lastActivity) {
+    public String getSound() {
+        return instrument.sound();
     }
 }
