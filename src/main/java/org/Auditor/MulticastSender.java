@@ -1,6 +1,7 @@
-package org.example;
+package org.Auditor;
 
 import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.DatagramPacket;
@@ -20,10 +21,8 @@ class MulticastSender {
             System.exit(1);
         }
 
-        // Convertir la chaîne d'instrument en une instance de l'énumération Instrument
-        Instrument instrument = Instrument.valueOf(args[0].toUpperCase());
         // Créer une instance de Musician avec l'instrument spécifié
-        Musician musician = new Musician(instrument);
+        Musician musician = new Musician(args[0].toUpperCase());
 
         // Créer un Timer pour planifier l'envoi périodique (toutes les secondes)
         Timer timer = new Timer();
@@ -31,9 +30,6 @@ class MulticastSender {
             @Override
             public void run() {
                 try (DatagramSocket socket = new DatagramSocket()) {
-                    // Mettre à jour l'activité du musicien
-                    musician.setLastActivity(System.currentTimeMillis());
-
                     // Construire le message json à envoyer contenant les informations du musicien
                     Gson gson = new Gson();
                     String musicianInfo =

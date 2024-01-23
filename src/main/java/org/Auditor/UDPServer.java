@@ -22,12 +22,13 @@ public class UDPServer implements Runnable{
         try (MulticastSocket socket = new MulticastSocket(PORT)) {
             var group_address = new InetSocketAddress(IPADDRESS, PORT);
             NetworkInterface netif = NetworkInterface.getByName("loopback_0");//getByName("eth0");
-
+            socket.joinGroup(group_address, netif);
             while (true) {
                 try {
                     socket.joinGroup(group_address, netif);
                     byte[] buffer = new byte[1024];
-                    var packet = new DatagramPacket(buffer, buffer.length);
+                    DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+                    socket.receive(packet);
 
                     socket.receive(packet);
 

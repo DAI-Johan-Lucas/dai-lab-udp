@@ -42,34 +42,3 @@ public class TCPServer implements Runnable {
         }
     }
 }
-
-//class TCPHandler implements Runnable{
-//    private final Socket clientSocket;
-//    private final Auditor.TCPWorker worker;
-//
-//    public TCPHandler(Socket clientSocket, Auditor.TCPWorker worker) {
-//        this.clientSocket = clientSocket;
-//        this.worker = worker;
-//    }
-//
-//    @Override
-//    public void run() {
-//        boolean running = true;
-//        System.out.println("Client connected");
-//        try (clientSocket;
-//             var out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream(), UTF_8));
-//             var in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), UTF_8))) {
-//            while (running) {
-//                out.write(worker.process());
-//                out.flush();
-//                String line = in.readLine();
-//                if (line.equals("quit") || line.equals("q")) {
-//                    running = false;
-//                }
-//            }
-//        } catch (Exception e) {
-//            System.err.println("Handler: " + e);
-//        }
-//        System.out.println("Client disconnected");
-//    }
-//}

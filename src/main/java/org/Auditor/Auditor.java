@@ -6,7 +6,7 @@ import org.example.Instrument;
 import java.util.*;
 
 public class Auditor {
-    static HashMap<String, Musician> musicians = new HashMap<>();
+    static HashMap<String, MusicianData> musicians = new HashMap<>();
 
     static Map<String, String> instruments = new HashMap<>(){{
         put("ti-ta-ti", "piano");
@@ -15,6 +15,7 @@ public class Auditor {
         put("gzi-gzi", "violin");
         put("boum-boum", "drum");
     }};
+
     public static void main(String[] args){
         final int TCP_PORT = 2205;
         final int UDP_PORT = 9904;
@@ -30,7 +31,18 @@ public class Auditor {
     record TCPWorker(){
         public String process() {
             Gson gson = new Gson();
-            return gson.toJson(new ArrayList<>(musicians.values()));
+            List<Musician> activeMusicians = new ArrayList<>();
+
+            // Filter musicians based on lastActivity within the last 5 seconds
+            long currentTime = System.currentTimeMillis();
+            for (Map.Entry<String, MusicianData> entry : musicians.entrySet()) {
+                MusicianData musicianData = entry.getValue();
+                if (musicianData.getLastActivity() + 5000 >= currentTime) {
+                    activeMusicians.add(musicianData.getMusician());
+                }
+            }
+
+            return gson.toJson(activeMusicians);
         }
     }
 
@@ -40,40 +52,62 @@ public class Auditor {
             Gson gson = new Gson();
             UDPReceiverStruct rcpt = gson.fromJson(message, UDPReceiverStruct.class);
 
-            Musician musician = new Musician(rcpt.uuid(),
-                    instruments.get(rcpt.sound));
-            if(musicians.containsKey(rcpt.uuid())){
-                musicians.get(rcpt.uuid()).setLastActivity(System.currentTimeMillis());
-            }else {
-                System.out.println("ADD " + musician.getUuid() + ":" + musician.getLastActivity());
-                musicians.put(musician.getUuid(), musician);
+            MusicianData musicianData = musicians.get(rcpt.uuid());
+            if (musicianData != null) {
+                musicianData.setLastActivity(System.currentTimeMillis());
+            } else {
+                Musician musician = new Musician(rcpt.uuid(), instruments.get(rcpt.sound));
+                musicianData = new MusicianData(musician, System.currentTimeMillis());
+                System.out.print("ADD " + musician.getUuid() + ":" + musicianData.getLastActivity());
+                musicians.put(musician.getUuid(), musicianData);
+
+                // Schedule removal after 5 seconds
                 Timer timer = new Timer();
                 timer.schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        removeMusician(musician.getUuid());
+                        cleanMusicians(musician.getUuid());
                     }
                 }, 5000);
-            };
+            }
         }
     }
 
-    public static void removeMusician(String uuid){
-//        System.out.println("Clean function on : " + uuid);
-        Musician musician = musicians.get(uuid);
-        if(musician.getLastActivity() + 5000 < System.currentTimeMillis()){
-            System.out.println("REMOVE " + uuid + ":" + musician.getLastActivity());
+    public static void cleanMusicians(String uuid) {
+        MusicianData musicianData = musicians.get(uuid);
+        if (musicianData != null && musicianData.getLastActivity() + 5000 < System.currentTimeMillis()) {
+            System.out.println("\tREMOVE " + uuid);
             musicians.remove(uuid);
-        }else {
+        } else if (musicianData != null) {
             Timer timer = new Timer();
-
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    removeMusician(musician.getUuid());
+                    cleanMusicians(musicianData.getMusician().getUuid());
                 }
-            }, (5000 - (System.currentTimeMillis() - musician.getLastActivity())));
+            }, (5000 - (System.currentTimeMillis() - musicianData.getLastActivity())));
+        }
+    }
+
+    private static class MusicianData {
+        private final Musician musician;
+        private long lastActivity;
+
+        public MusicianData(Musician musician, long lastActivity) {
+            this.musician = musician;
+            this.lastActivity = lastActivity;
+        }
+
+        public Musician getMusician() {
+            return musician;
+        }
+
+        public long getLastActivity() {
+            return lastActivity;
+        }
+
+        public void setLastActivity(long lastActivity) {
+            this.lastActivity = lastActivity;
         }
     }
 }
-
