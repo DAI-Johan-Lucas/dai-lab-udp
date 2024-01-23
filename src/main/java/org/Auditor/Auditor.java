@@ -68,6 +68,7 @@ public class Auditor {
             musicians.remove(uuid);
         }else {
             Timer timer = new Timer();
+
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
