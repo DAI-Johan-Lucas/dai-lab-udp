@@ -16,4 +16,12 @@ public class Musician {
     public void setLastActivity(long lastActivity) {
         this.lastActivity = lastActivity;
     }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public String getSound() {
+        return instrument.sound();
+    }
 }

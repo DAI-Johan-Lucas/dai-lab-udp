@@ -1,6 +1,7 @@
 package org.Auditor;
 
 import com.google.gson.Gson;
+import org.example.Instrument;
 
 import java.util.*;
 
@@ -17,54 +18,51 @@ public class Auditor {
     public static void main(String[] args){
         final int TCP_PORT = 2205;
         final int UDP_PORT = 9904;
+        final String UDP_ADDRESS = "239.255.22.5";
 
-        Thread treadTcp = new Thread(new TCPServer(TCP_PORT, 10));
+        Thread treadTcp = new Thread(new TCPServer(TCP_PORT));
         treadTcp.start();
 
-        Thread treadUdp = new Thread(new UDPServer(UDP_PORT, 10));
+        Thread treadUdp = new Thread(new UDPServer(UDP_PORT, UDP_ADDRESS));
         treadUdp.start();
     }
 
-    public static class TCPWorker{
+    record TCPWorker(){
         public String process() {
             Gson gson = new Gson();
             return gson.toJson(new ArrayList<>(musicians.values()));
         }
     }
 
-    public static class UDPWorker{
-
-        private record UDPReceiverStruc(String uuid, String sound) {
-
-        }
+    private record UDPReceiverStruct(String uuid, String sound) {}
+    record UDPWorker(){
         public void process(String message){
             Gson gson = new Gson();
-            UDPReceiverStruc rcpt = gson.fromJson(message, UDPReceiverStruc.class);
+            UDPReceiverStruct rcpt = gson.fromJson(message, UDPReceiverStruct.class);
 
             Musician musician = new Musician(rcpt.uuid(),
                     instruments.get(rcpt.sound));
             if(musicians.containsKey(rcpt.uuid())){
                 musicians.get(rcpt.uuid()).setLastActivity(System.currentTimeMillis());
             }else {
-                System.out.print("ADD " + musician.getUuid() + ":" + musician.getLastActivity());
+                System.out.println("ADD " + musician.getUuid() + ":" + musician.getLastActivity());
                 musicians.put(musician.getUuid(), musician);
                 Timer timer = new Timer();
                 timer.schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        cleanMusicians(musician.getUuid());
+                        removeMusician(musician.getUuid());
                     }
                 }, 5000);
             };
-
         }
     }
 
-    public static void cleanMusicians(String uuid){
+    public static void removeMusician(String uuid){
 //        System.out.println("Clean function on : " + uuid);
         Musician musician = musicians.get(uuid);
         if(musician.getLastActivity() + 5000 < System.currentTimeMillis()){
-            System.out.println("\tREMOVE " + uuid);
+            System.out.println("REMOVE " + uuid + ":" + musician.getLastActivity());
             musicians.remove(uuid);
         }else {
             Timer timer = new Timer();
@@ -72,7 +70,7 @@ public class Auditor {
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    cleanMusicians(musician.getUuid());
+                    removeMusician(musician.getUuid());
                 }
             }, (5000 - (System.currentTimeMillis() - musician.getLastActivity())));
         }
