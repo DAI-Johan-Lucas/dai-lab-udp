@@ -4,9 +4,18 @@ import com.google.gson.Gson;
 
 import java.util.*;
 
+/**
+ * Auditor class that will listen to the musicians and print the active ones
+ */
 public class Auditor {
+    /**
+     * HashMap containing all the currently active musicians with their last activity
+     */
     static HashMap<String, MusicianData> musicians = new HashMap<>();
 
+    /**
+     * HashMap containing the instruments and their sound
+     */
     static Map<String, String> instruments = new HashMap<>(){{
         put("ti-ta-ti", "piano");
         put("pouet", "trumpet");
@@ -20,13 +29,18 @@ public class Auditor {
         final int UDP_PORT = 9904;
         final String UDP_ADDRESS = "239.255.22.5";
 
+        // Start listening to the clients on TCP
         Thread treadTcp = new Thread(new TCPServer(TCP_PORT));
         treadTcp.start();
 
+        // Start listening to the musicians on UDP (multicast)
         Thread treadUdp = new Thread(new UDPServer(UDP_PORT, UDP_ADDRESS));
         treadUdp.start();
     }
 
+    /**
+     * TCPWorker class that will process the TCP requests
+     */
     record TCPWorker(){
         public String process() {
             Gson gson = new Gson();
@@ -72,6 +86,10 @@ public class Auditor {
         }
     }
 
+    /**
+     * Clean the musicians HashMap by removing the inactive ones
+     * @param uuid The uuid of the musician to remove
+     */
     public static void cleanMusicians(String uuid) {
         MusicianData musicianData = musicians.get(uuid);
         if (musicianData != null && musicianData.getLastActivity() + 5000 < System.currentTimeMillis()) {
@@ -88,6 +106,9 @@ public class Auditor {
         }
     }
 
+    /**
+     * MusicianData class that contains the musician and its last activity
+     */
     private static class MusicianData {
         private final Musician musician;
         private long lastActivity;
