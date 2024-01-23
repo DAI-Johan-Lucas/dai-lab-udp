@@ -1,6 +1,7 @@
 package org.example;
 
 import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.DatagramPacket;
@@ -31,9 +32,6 @@ class MulticastSender {
             @Override
             public void run() {
                 try (DatagramSocket socket = new DatagramSocket()) {
-                    // Mettre à jour l'activité du musicien
-                    musician.setLastActivity(System.currentTimeMillis());
-
                     // Construire le message json à envoyer contenant les informations du musicien
                     Gson gson = new Gson();
                     String musicianInfo = gson.toJson(musician);

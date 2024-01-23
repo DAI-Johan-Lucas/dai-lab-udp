@@ -3,28 +3,12 @@ package org.Auditor;
 import java.util.Objects;
 import java.util.UUID;
 
-public class Musician {
-    private final String uuid;
-    private final String instrument;
-    private long lastActivity;
+public record Musician(String uuid, String instrument) {
 
-    public Musician(String instrument) {
-        this.uuid = UUID.randomUUID().toString();
-        this.instrument = instrument;
-        this.lastActivity = System.currentTimeMillis();
-    }
-
-    public Musician(String uuid, String instrument) {
-        this.uuid = uuid;
-        this.instrument = instrument;
-        this.lastActivity = System.currentTimeMillis();
-    }
-
-    public long getLastActivity() {
-        return lastActivity;
-    }
-    public void setLastActivity(long lastActivity) {
-        this.lastActivity = lastActivity;
+    public Musician {
+        // Utilisation d'un bloc d'initialisation pour valider ou effectuer d'autres actions si nécessaire
+        Objects.requireNonNull(uuid, "UUID cannot be null");
+        Objects.requireNonNull(instrument, "Instrument cannot be null");
     }
 
     public String getUuid() {
@@ -33,10 +17,10 @@ public class Musician {
 
     @Override
     public boolean equals(Object obj) {
-        if(obj instanceof Musician){
-            return this.uuid.equals(((Musician) obj).uuid);
-        }
-        return super.equals(obj);
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Musician musician = (Musician) obj;
+        return Objects.equals(uuid, musician.uuid);
     }
 
     @Override
