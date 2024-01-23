@@ -1,4 +1,4 @@
-package org.Auditor;
+package orchestra.musician;
 
 import java.util.Objects;
 import java.util.UUID;

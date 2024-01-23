@@ -1,15 +1,15 @@
-package org.Auditor;
+package orchestra.auditor;
 
 import java.io.*;
 import java.net.*;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-public class UDPServer implements Runnable{
+public class MulticastReceiver implements Runnable{
     private final int PORT;
     private final String IPADDRESS;
 
-    UDPServer(int port, String ipaddress){
+    MulticastReceiver(int port, String ipaddress){
         this.PORT = port;
         IPADDRESS = ipaddress;
     }

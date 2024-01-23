@@ -1,4 +1,4 @@
-package org.Auditor;
+package orchestra.musician;
 
 import com.google.gson.Gson;
 
@@ -21,7 +21,7 @@ class MulticastSender {
             System.exit(1);
         }
 
-        // Créer une instance de Musician avec l'instrument spécifié
+        // Créer une instance de orchestra.Musician avec l'instrument spécifié
         Musician musician = new Musician(args[0].toUpperCase());
 
         // Créer un Timer pour planifier l'envoi périodique (toutes les secondes)

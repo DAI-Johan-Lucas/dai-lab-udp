@@ -1,4 +1,4 @@
-package org.Auditor;
+package orchestra.auditor;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -6,10 +6,10 @@ import java.net.Socket;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-public class TCPServer implements Runnable {
+public class TCPReceiver implements Runnable {
     private final int port;
 
-    TCPServer(int port) {
+    TCPReceiver(int port) {
         this.port = port;
     }
 

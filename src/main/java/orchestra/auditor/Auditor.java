@@ -1,11 +1,12 @@
-package org.Auditor;
+package orchestra.auditor;
 
+import orchestra.musician.Musician;
 import com.google.gson.Gson;
 
 import java.util.*;
 
 /**
- * Auditor class that will listen to the musicians and print the active ones
+ * orchestra.Auditor class that will listen to the musicians and print the active ones
  */
 public class Auditor {
     /**
@@ -30,11 +31,11 @@ public class Auditor {
         final String UDP_ADDRESS = "239.255.22.5";
 
         // Start listening to the clients on TCP
-        Thread treadTcp = new Thread(new TCPServer(TCP_PORT));
+        Thread treadTcp = new Thread(new TCPReceiver(TCP_PORT));
         treadTcp.start();
 
         // Start listening to the musicians on UDP (multicast)
-        Thread treadUdp = new Thread(new UDPServer(UDP_PORT, UDP_ADDRESS));
+        Thread treadUdp = new Thread(new MulticastReceiver(UDP_PORT, UDP_ADDRESS));
         treadUdp.start();
     }
 

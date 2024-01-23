@@ -104,8 +104,8 @@ function compareAuditorStateAgainstRunningContainers( checkDone ) {
 			 * program will terminate.
 			 */
 			expect(instrumentsSeenInDocker).to.eql(instrumentsSeenByAuditor);
-			console.log("Auditor validation: success: " + JSON.stringify(instrumentsSeenByAuditor));
-			checkDone( null, "Auditor validation: success");
+			console.log("orchestra.Auditor validation: success: " + JSON.stringify(instrumentsSeenByAuditor));
+			checkDone( null, "orchestra.Auditor validation: success");
 	});
 }
 
