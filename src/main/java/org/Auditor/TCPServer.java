@@ -9,19 +9,19 @@ import java.util.concurrent.Executors;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class TCPServer implements Runnable {
-    private final int port;
+    private final int PORT;
     private final int numThreads;
 
     TCPServer(int port, int numThreads) {
-        this.port = port;
+        this.PORT = port;
         this.numThreads = numThreads;
     }
 
     public void run() {
-        System.out.println("Start TCP server - Port " + port +
+        System.out.println("Start TCP server - Port " + PORT +
                 " - Thread pool with " + numThreads + " threads");
         Auditor.TCPWorker worker = new Auditor.TCPWorker();
-        try (var serverSocket = new ServerSocket(port);
+        try (var serverSocket = new ServerSocket(PORT);
              ExecutorService executor = Executors.newFixedThreadPool(numThreads)) {
             while (true) {
                 try {

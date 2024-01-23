@@ -5,10 +5,8 @@ import java.util.UUID;
 
 public record Musician(String uuid, String instrument) {
 
-    public Musician {
-        // Utilisation d'un bloc d'initialisation pour valider ou effectuer d'autres actions si nécessaire
-        Objects.requireNonNull(uuid, "UUID cannot be null");
-        Objects.requireNonNull(instrument, "Instrument cannot be null");
+    public Musician(String instrument) {
+        this(UUID.randomUUID().toString(), instrument);
     }
 
     public String getUuid() {

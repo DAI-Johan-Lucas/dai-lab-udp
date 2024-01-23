@@ -5,8 +5,6 @@ import java.net.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 public class UDPServer implements Runnable {
     final static String IPADDRESS = "239.255.22.5";
     private final int port;
@@ -64,3 +62,4 @@ public class UDPServer implements Runnable {
             }
         }
     }
+}

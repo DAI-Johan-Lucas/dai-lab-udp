@@ -1,4 +1,4 @@
-package org.example;
+package org.Auditor;
 
 import com.google.gson.Gson;
 
@@ -21,10 +21,8 @@ class MulticastSender {
             System.exit(1);
         }
 
-        // Convertir la chaîne d'instrument en une instance de l'énumération Instrument
-        Instrument instrument = Instrument.valueOf(args[0].toUpperCase());
         // Créer une instance de Musician avec l'instrument spécifié
-        Musician musician = new Musician(instrument);
+        Musician musician = new Musician(args[0].toUpperCase());
 
         // Créer un Timer pour planifier l'envoi périodique (toutes les secondes)
         Timer timer = new Timer();
