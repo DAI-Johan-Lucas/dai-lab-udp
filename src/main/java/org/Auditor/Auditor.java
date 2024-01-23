@@ -18,11 +18,12 @@ public class Auditor {
     public static void main(String[] args){
         final int TCP_PORT = 2205;
         final int UDP_PORT = 9904;
+        final String UDP_ADDRESS = "239.255.22.5";
 
-        Thread treadTcp = new Thread(new TCPServer(TCP_PORT, 10));
+        Thread treadTcp = new Thread(new TCPServer(TCP_PORT));
         treadTcp.start();
 
-        Thread treadUdp = new Thread(new UDPServer(UDP_PORT, 10));
+        Thread treadUdp = new Thread(new UDPServer(UDP_PORT, UDP_ADDRESS));
         treadUdp.start();
     }
 
@@ -44,7 +45,7 @@ public class Auditor {
             if(musicians.containsKey(rcpt.uuid())){
                 musicians.get(rcpt.uuid()).setLastActivity(System.currentTimeMillis());
             }else {
-                System.out.print("ADD " + musician.getUuid() + ":" + musician.getLastActivity());
+                System.out.println("ADD " + musician.getUuid() + ":" + musician.getLastActivity());
                 musicians.put(musician.getUuid(), musician);
                 Timer timer = new Timer();
                 timer.schedule(new TimerTask() {
@@ -61,7 +62,7 @@ public class Auditor {
 //        System.out.println("Clean function on : " + uuid);
         Musician musician = musicians.get(uuid);
         if(musician.getLastActivity() + 5000 < System.currentTimeMillis()){
-            System.out.println("\tREMOVE " + uuid);
+            System.out.println("REMOVE " + uuid + ":" + musician.getLastActivity());
             musicians.remove(uuid);
         }else {
             Timer timer = new Timer();
