@@ -1,7 +1,6 @@
 package org.Auditor;
 
 import com.google.gson.Gson;
-import org.example.Instrument;
 
 import java.util.*;
 
@@ -58,7 +57,7 @@ public class Auditor {
             } else {
                 Musician musician = new Musician(rcpt.uuid(), instruments.get(rcpt.sound));
                 musicianData = new MusicianData(musician, System.currentTimeMillis());
-                System.out.print("ADD " + musician.getUuid() + ":" + musicianData.getLastActivity());
+                System.out.println("ADD " + musician.getUuid() + ":" + musicianData.getLastActivity());
                 musicians.put(musician.getUuid(), musicianData);
 
                 // Schedule removal after 5 seconds
