@@ -15,9 +15,9 @@ public class MulticastReceiver implements Runnable{
     }
 
     public void run(){
-        System.out.println("Start UDP server - Port " + PORT + " - IP " + IPADDRESS);
         Auditor.UDPWorker worker = new Auditor.UDPWorker();
         try (MulticastSocket socket = new MulticastSocket(PORT)) {
+            System.out.println("[INFO] UDP SERVER start listening on PORT:" + PORT + " HOST:" + IPADDRESS);
             var group_address = new InetSocketAddress(IPADDRESS, PORT);
             NetworkInterface netif = NetworkInterface.getByName("loopback_0"); //getByName("eth0");
             socket.joinGroup(group_address, netif);

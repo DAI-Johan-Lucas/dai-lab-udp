@@ -72,8 +72,9 @@ public class Auditor {
             } else {
                 Musician musician = new Musician(rcpt.uuid(), instruments.get(rcpt.sound));
                 musicianData = new MusicianData(musician, System.currentTimeMillis());
-                System.out.println("ADD " + musician.getUuid() + ":" + musicianData.getLastActivity());
                 musicians.put(musician.getUuid(), musicianData);
+
+                System.out.println("ADD " + musician.getUuid());
 
                 // Schedule removal after 5 seconds
                 Timer timer = new Timer();
