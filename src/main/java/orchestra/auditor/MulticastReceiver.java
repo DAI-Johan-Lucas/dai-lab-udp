@@ -1,27 +1,33 @@
 package orchestra.auditor;
 
+import orchestra.Logger;
+
 import java.io.*;
 import java.net.*;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-public class MulticastReceiver implements Runnable{
+public class MulticastReceiver implements Runnable {
     private final int PORT;
     private final String IPADDRESS;
 
-    MulticastReceiver(int port, String ipaddress){
+    MulticastReceiver(int port, String ipaddress) {
         this.PORT = port;
         IPADDRESS = ipaddress;
     }
 
-    public void run(){
+    public void run() {
         Auditor.UDPWorker worker = new Auditor.UDPWorker();
         try (MulticastSocket socket = new MulticastSocket(PORT)) {
-            System.out.println("\033[0;34m" + "[INFO]" + "\033[0m"
-                    + " UDP SERVER start listening on PORT:" + PORT + " HOST:" + IPADDRESS);
+            Logger.log("INFO", "UDP SERVER start listening on PORT:" + PORT + " HOST:" + IPADDRESS);
+
             var group_address = new InetSocketAddress(IPADDRESS, PORT);
             NetworkInterface netif = NetworkInterface.getByName("loopback_0"); //getByName("eth0");
+
+            // L'auditor rejoint le groupe de multicast pour y recevoir les sons des musiciens
             socket.joinGroup(group_address, netif);
+            Logger.log("SUCCESS", "UDP SERVER joined multicast group: " + IPADDRESS + ":" + PORT + " on interface: " + netif.getName() + " (" + netif.getDisplayName() + ")");
+
             try {
                 while (true) {
                     byte[] buffer = new byte[1024];
@@ -33,12 +39,13 @@ public class MulticastReceiver implements Runnable{
                     worker.process(message);
                 }
             } catch (IOException e) {
-                System.err.println("UDP client: " + e.getMessage());
-            }finally {
+                Logger.log("ERROR", "UDP client: " + e.getMessage());
+            } finally {
                 socket.leaveGroup(group_address, netif);
+                Logger.log("INFO", "UDP SERVER left multicast group: " + IPADDRESS + ":" + PORT);
             }
         } catch (IOException e) {
-            System.err.println("UDP server: " + e.getMessage());
+            Logger.log("ERROR", "UDP server: " + e.getMessage());
         }
     }
 }
