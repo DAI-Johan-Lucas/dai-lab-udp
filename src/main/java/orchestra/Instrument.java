@@ -1,13 +1,20 @@
 package orchestra;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Instrument enum that contains the instruments and their sounds
  */
 public enum Instrument {
+    @SerializedName("piano")
     PIANO("ti-ta-ti"),
+    @SerializedName("trumpet")
     TRUMPET("pouet"),
+    @SerializedName("flute")
     FLUTE("trulu"),
+    @SerializedName("violin")
     VIOLIN("gzi-gzi"),
+    @SerializedName("drum")
     DRUM("boum-boum");
 
     private final String sound;
@@ -32,5 +39,10 @@ public enum Instrument {
             }
         }
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString().toLowerCase();
     }
 }

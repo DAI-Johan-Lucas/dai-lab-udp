@@ -56,16 +56,16 @@ public class Auditor {
             } else {
                 Logger.log(INFO, "ADD musician: " + musicianData.getUuid());
                 musicians.put(musicianData.uuid, musicianData);
-            }
 
-            // Schedule removal after 5 seconds
-            Timer timer = new Timer();
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    cleanMusicians(musicianData.getUuid());
-                }
-            }, 5000);
+                // Schedule removal after 5 seconds
+                Timer timer = new Timer();
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        cleanMusicians(musicianData.getUuid());
+                    }
+                }, 5000);
+            }
         }
     }
 
@@ -76,9 +76,9 @@ public class Auditor {
      */
     public static void cleanMusicians(String uuid) {
         MusicianData musicianData = musicians.get(uuid);
-        if (musicianData != null && musicianData.getLastActivity() + 5000 < System.currentTimeMillis()) {
-            Logger.log(INFO, "\tREMOVE musician: " + uuid);
+        if (musicianData != null && musicianData.getLastActivity() + 5000 <= System.currentTimeMillis()) {
             musicians.remove(uuid);
+            Logger.log(INFO, "REMOVE musician: " + uuid);
         } else if (musicianData != null) {
             Timer timer = new Timer();
             timer.schedule(new TimerTask() {
@@ -86,7 +86,7 @@ public class Auditor {
                 public void run() {
                     cleanMusicians(musicianData.getUuid());
                 }
-            }, (5000 - (System.currentTimeMillis() - musicianData.getLastActivity())));
+            }, 5000 - (System.currentTimeMillis() - musicianData.getLastActivity()));
         }
     }
 
