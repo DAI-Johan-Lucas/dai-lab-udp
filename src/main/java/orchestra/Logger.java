@@ -1,5 +1,8 @@
 package orchestra;
 
+/**
+ * Logger class that will print the logs in different colors
+ */
 public class Logger {
 
     private static final String COLOR_RESET = "\033[0m";
@@ -11,6 +14,11 @@ public class Logger {
         INFO, WARNING, SUCCESS, ERROR
     }
 
+    /**
+     * Log a message with a type
+     * @param type type of the log
+     * @param message message to log
+     */
     public static void log(LogType type, String message) {
         switch (type) {
             case INFO:

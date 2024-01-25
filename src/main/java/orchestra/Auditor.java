@@ -40,6 +40,9 @@ public class Auditor {
         }
     }
 
+    /**
+     * UDPWorker class that will process the UDP requests by adding the musicians to the HashMap and scheduling their removal
+     */
     record UDPWorker() {
         public void process(String message) {
             Gson gson = new Gson();

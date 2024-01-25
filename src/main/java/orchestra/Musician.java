@@ -3,6 +3,11 @@ package orchestra;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * Musician class that will contain the musician's information
+ * @param uuid uuid of the musician
+ * @param instrument instrument of the musician
+ */
 public record Musician(String uuid, Instrument instrument) {
 
     public Musician(Instrument instrument) {

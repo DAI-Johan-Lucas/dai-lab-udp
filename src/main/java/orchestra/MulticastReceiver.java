@@ -6,6 +6,9 @@ import java.net.*;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static orchestra.Logger.LogType.*;
 
+/**
+ * MulticastReceiver class that will listen to the multicast group and process the messages
+ */
 public class MulticastReceiver implements Runnable {
     private final int PORT;
     private final String IPADDRESS;
@@ -15,15 +18,19 @@ public class MulticastReceiver implements Runnable {
         IPADDRESS = ipaddress;
     }
 
+    /**
+     * Run the UDP server
+     */
     public void run() {
         Auditor.UDPWorker worker = new Auditor.UDPWorker();
         try (MulticastSocket socket = new MulticastSocket(PORT)) {
             Logger.log(INFO, "UDP SERVER start listening on PORT:" + PORT + " HOST:" + IPADDRESS);
 
             var group_address = new InetSocketAddress(IPADDRESS, PORT);
-            NetworkInterface netif = NetworkInterface.getByName("eth0"); //getByName("eth0");
+            NetworkInterface netif = NetworkInterface.getByName("eth0"); // for docker
+//            NetworkInterface netif = NetworkInterface.getByName("loopback_0"); // for IDE testing purpose
 
-            // L'auditor rejoint le groupe de multicast pour y recevoir les sons des musiciens
+            // The auditor joins the multicast group to receive the sounds of the musicians
             socket.joinGroup(group_address, netif);
             Logger.log(SUCCESS, "UDP SERVER joined multicast group: " + IPADDRESS + ":" + PORT + " on interface: " + netif.getName());
 

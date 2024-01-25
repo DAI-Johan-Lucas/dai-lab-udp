@@ -11,10 +11,18 @@ import java.util.*;
 import static java.nio.charset.StandardCharsets.*;
 import static orchestra.Logger.LogType.*;
 
+/**
+ * MulticastSender class that will send the sounds of a musician to the multicast group
+ */
 class MulticastSender {
     final static String IPADDR = "239.255.22.5";
     final static int PORT = 9904;
 
+    /**
+     * MulticastStruct class that will be used to send the musician's information
+     * @param uuid  uuid of the musician
+     * @param sound sound of the musician
+     */
     public record MulticastStruct(String uuid, String sound) {
     }
 
@@ -25,32 +33,31 @@ class MulticastSender {
         }
 
         try {
-            // Créer une instance de Musician avec l'instrument spécifié
+            // Create an instance of Musician with the specified instrument
             Musician musician = new Musician(Instrument.valueOf(args[0].toUpperCase()));
 
             Logger.log(SUCCESS, "Musician with a " + args[0] + " created");
             Logger.log(INFO, "Sounds sent :");
 
-            // Créer un Timer pour planifier l'envoi périodique (toutes les secondes)
+            // Create a Timer to schedule periodic sending (every second)
             final long[] soundCount = {0};
             Timer timer = new Timer();
             timer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
                     try (DatagramSocket socket = new DatagramSocket()) {
-                        // Construction du json à envoyer, contenant les informations du musicien
+                        // Construct the JSON to be sent, containing the musician's information
                         Gson gson = new Gson();
-                        //String musicianInfo = "{\"uuid\":\"" + musician.uuid() + "\",\"sound\":\"" + musician.instrument().getSound() + "\"}";
                         String musicianInfo = gson.toJson(new MulticastStruct(musician.uuid(), musician.instrument().getSound()));
                         byte[] musicianData = musicianInfo.getBytes(UTF_8);
 
-                        // Envoyer le message json à l'adresse IP de multicast et au port spécifié
+                        // Send the JSON message to the multicast IP address and the specified port
                         var dest_address = new InetSocketAddress(IPADDR, PORT);
                         var packet = new DatagramPacket(musicianData, musicianData.length, dest_address);
 
                         socket.send(packet);
 
-                        // Incrémenter le compteur et afficher le son
+                        // Increment the counter and display the sound
                         System.out.println(++soundCount[0] + ": " + musician.instrument().getSound());
 
                     } catch (IOException e) {

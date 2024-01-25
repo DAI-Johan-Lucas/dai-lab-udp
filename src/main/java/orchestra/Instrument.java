@@ -1,5 +1,8 @@
 package orchestra;
 
+/**
+ * Instrument enum that contains the instruments and their sounds
+ */
 public enum Instrument {
     PIANO("ti-ta-ti"),
     TRUMPET("pouet"),
@@ -17,6 +20,11 @@ public enum Instrument {
         return sound;
     }
 
+    /**
+     * Get the instrument from the sound of it
+     * @param sound sound of the instrument
+     * @return the instrument
+     */
     public static Instrument fromSound(String sound) {
         for (Instrument instrument : Instrument.values()) {
             if (instrument.getSound().equals(sound)) {

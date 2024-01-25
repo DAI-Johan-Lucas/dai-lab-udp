@@ -7,6 +7,9 @@ import java.net.Socket;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static orchestra.Logger.LogType.*;
 
+/**
+ * TCPReceiver class that will listen to the TCP port and process the messages
+ */
 public class TCPReceiver implements Runnable {
     private final int PORT;
 
@@ -14,6 +17,9 @@ public class TCPReceiver implements Runnable {
         this.PORT = port;
     }
 
+    /**
+     * Run the TCP server
+     */
     public void run() {
         Auditor.TCPWorker worker = new Auditor.TCPWorker();
         try (var serverSocket = new ServerSocket(PORT)) {
