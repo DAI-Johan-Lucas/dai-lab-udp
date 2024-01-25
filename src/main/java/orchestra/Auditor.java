@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 
 import java.util.*;
 
+import static orchestra.Logger.LogType.*;
+
 /**
  * orchestra.Auditor class that will listen to the musicians and print the active ones
  */
@@ -49,7 +51,7 @@ public class Auditor {
             if(musicians.containsKey(musicianData.uuid)){
                 musicians.get(musicianData.uuid).setLastActivity(System.currentTimeMillis());
             } else {
-                System.out.println("ADD " + musicianData.getUuid());
+                Logger.log(INFO, "ADD musician: " + musicianData.getUuid());
                 musicians.put(musicianData.uuid, musicianData);
             }
 
@@ -72,7 +74,7 @@ public class Auditor {
     public static void cleanMusicians(String uuid) {
         MusicianData musicianData = musicians.get(uuid);
         if (musicianData != null && musicianData.getLastActivity() + 5000 < System.currentTimeMillis()) {
-            System.out.println("\tREMOVE " + uuid);
+            Logger.log(INFO, "\tREMOVE musician: " + uuid);
             musicians.remove(uuid);
         } else if (musicianData != null) {
             Timer timer = new Timer();

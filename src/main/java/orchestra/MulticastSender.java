@@ -9,6 +9,7 @@ import java.net.InetSocketAddress;
 import java.util.*;
 
 import static java.nio.charset.StandardCharsets.*;
+import static orchestra.Logger.LogType.*;
 
 class MulticastSender {
     final static String IPADDR = "localhost";
@@ -19,7 +20,7 @@ class MulticastSender {
 
     public static void main(String[] args) {
         if (args.length != 1) {
-            Logger.log("WARNING", "+ Usage: java MulticastSender <instrument>");
+            Logger.log(WARNING, "+ Usage: java MulticastSender <instrument>");
             System.exit(1);
         }
 
@@ -27,8 +28,8 @@ class MulticastSender {
             // Créer une instance de Musician avec l'instrument spécifié
             Musician musician = new Musician(Instrument.valueOf(args[0].toUpperCase()));
 
-            Logger.log("SUCCESS", "Musician with a " + args[0] + " created");
-            Logger.log("INFO", "Sounds sent :");
+            Logger.log(SUCCESS, "Musician with a " + args[0] + " created");
+            Logger.log(INFO, "Sounds sent :");
 
             // Créer un Timer pour planifier l'envoi périodique (toutes les secondes)
             final long[] soundCount = {0};
@@ -59,12 +60,12 @@ class MulticastSender {
                         soundCount[0]++;
 
                     } catch (IOException e) {
-                        Logger.log("ERROR", "UDP client: " + e.getMessage());
+                        Logger.log(ERROR, "UDP client: " + e.getMessage());
                     }
                 }
             }, 0, 1000);
         } catch (Exception e) {
-            Logger.log("ERROR", "Musician creation: " + e.getMessage());
+            Logger.log(ERROR, "Musician creation: " + e.getMessage());
         }
     }
 }
