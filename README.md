@@ -14,6 +14,11 @@ How to use
 Go to the root of the project and run the following command:
 
 ```
+mvn clean package
+```
+To build the project.
+
+```
 docker build -t dai/auditor -f docker/image-auditor/Dockerfile .
 ```
 To build the image of the auditor.
