@@ -45,18 +45,8 @@ public class Auditor {
     record TCPWorker(){
         public String process() {
             Gson gson = new Gson();
-            List<Musician> activeMusicians = new ArrayList<>();
 
-            // Filter musicians based on lastActivity within the last 5 seconds
-            long currentTime = System.currentTimeMillis();
-            for (Map.Entry<String, MusicianData> entry : musicians.entrySet()) {
-                MusicianData musicianData = entry.getValue();
-                if (musicianData.getLastActivity() + 5000 >= currentTime) {
-                    activeMusicians.add(musicianData.getMusician());
-                }
-            }
-
-            return gson.toJson(activeMusicians);
+            return gson.toJson(musicians.values().stream().toList());
         }
     }
 
@@ -66,25 +56,23 @@ public class Auditor {
             Gson gson = new Gson();
             UDPReceiverStruct rcpt = gson.fromJson(message, UDPReceiverStruct.class);
 
-            MusicianData musicianData = musicians.get(rcpt.uuid());
-            if (musicianData != null) {
-                musicianData.setLastActivity(System.currentTimeMillis());
+            MusicianData musicianData = new MusicianData(rcpt.uuid(), instruments.get(rcpt.sound));
+
+            if(musicians.containsKey(musicianData.uuid)){
+                musicians.get(musicianData.uuid).setLastActivity(System.currentTimeMillis());
             } else {
-                Musician musician = new Musician(rcpt.uuid(), instruments.get(rcpt.sound));
-                musicianData = new MusicianData(musician, System.currentTimeMillis());
-                musicians.put(musician.getUuid(), musicianData);
-
-                System.out.println("ADD " + musician.getUuid());
-
-                // Schedule removal after 5 seconds
-                Timer timer = new Timer();
-                timer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        cleanMusicians(musician.getUuid());
-                    }
-                }, 5000);
+                System.out.println("ADD " + musicianData.getUuid());
+                musicians.put(musicianData.uuid, musicianData);
             }
+
+            // Schedule removal after 5 seconds
+            Timer timer = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    cleanMusicians(musicianData.getUuid());
+                }
+            }, 5000);
         }
     }
 
@@ -102,7 +90,7 @@ public class Auditor {
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    cleanMusicians(musicianData.getMusician().getUuid());
+                    cleanMusicians(musicianData.getUuid());
                 }
             }, (5000 - (System.currentTimeMillis() - musicianData.getLastActivity())));
         }
@@ -111,17 +99,15 @@ public class Auditor {
     /**
      * MusicianData class that contains the musician and its last activity
      */
-    private static class MusicianData {
-        private final Musician musician;
+    private static class MusicianData  {
+        private final String uuid;
+        private final String instrument;
         private long lastActivity;
 
-        public MusicianData(Musician musician, long lastActivity) {
-            this.musician = musician;
-            this.lastActivity = lastActivity;
-        }
-
-        public Musician getMusician() {
-            return musician;
+        public MusicianData(String uuid, String instrument) {
+            this.uuid = uuid;
+            this.instrument = instrument;
+            this.lastActivity = System.currentTimeMillis();
         }
 
         public long getLastActivity() {
@@ -130,6 +116,10 @@ public class Auditor {
 
         public void setLastActivity(long lastActivity) {
             this.lastActivity = lastActivity;
+        }
+
+        public String getUuid() {
+            return uuid;
         }
     }
 }

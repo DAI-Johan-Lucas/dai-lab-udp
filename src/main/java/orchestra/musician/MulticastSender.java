@@ -7,15 +7,23 @@ import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.DatagramPacket;
 import java.net.InetSocketAddress;
-import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 import static java.nio.charset.StandardCharsets.*;
 
 class MulticastSender {
     final static String IPADDR = "localhost";
     final static int PORT = 9904;
+
+
+    static Map<String, String> instruments = new HashMap<>(){{
+        put("piano", "ti-ta-ti");
+        put("trumpet", "pouet");
+        put("flute", "trulu");
+        put("violin", "gzi-gzi");
+        put("drum", "boum-boum");
+    }};
+    private record UDPReceiverStruct(String uuid, String sound) {}
 
     public static void main(String[] args) {
         if (args.length != 1) {
@@ -37,7 +45,7 @@ class MulticastSender {
                     try (DatagramSocket socket = new DatagramSocket()) {
                         // Construction du json à envoyer, contenant les informations du musicien
                         Gson gson = new Gson();
-                        String musicianInfo = gson.toJson(musician);
+                        String musicianInfo = gson.toJson(new UDPReceiverStruct(musician.getUuid(), instruments.get(musician.instrument().toLowerCase())));
                         byte[] musicianData = musicianInfo.getBytes(UTF_8);
 
                         // Envoyer le message json à l'adresse IP de multicast et au port spécifié
