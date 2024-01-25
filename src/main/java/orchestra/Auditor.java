@@ -1,6 +1,5 @@
-package orchestra.auditor;
+package orchestra;
 
-import orchestra.musician.Musician;
 import com.google.gson.Gson;
 
 import java.util.*;
@@ -14,18 +13,7 @@ public class Auditor {
      */
     static HashMap<String, MusicianData> musicians = new HashMap<>();
 
-    /**
-     * HashMap containing the instruments and their sound
-     */
-    static Map<String, String> instruments = new HashMap<>(){{
-        put("ti-ta-ti", "piano");
-        put("pouet", "trumpet");
-        put("trulu", "flute");
-        put("gzi-gzi", "violin");
-        put("boum-boum", "drum");
-    }};
-
-    public static void main(String[] args){
+    public static void main(String[] args) {
         final int TCP_PORT = 2205;
         final int UDP_PORT = 9904;
         final String UDP_ADDRESS = "239.255.22.5";
@@ -42,17 +30,18 @@ public class Auditor {
     /**
      * TCPWorker class that will process the TCP requests
      */
-    record TCPWorker(){
+    record TCPWorker() {
         public String process() {
             Gson gson = new Gson();
-            List<Musician> activeMusicians = new ArrayList<>();
+            List<MusicianData> activeMusicians = new ArrayList<>();
 
             // Filter musicians based on lastActivity within the last 5 seconds
             long currentTime = System.currentTimeMillis();
             for (Map.Entry<String, MusicianData> entry : musicians.entrySet()) {
                 MusicianData musicianData = entry.getValue();
+                // If the musician is active, add it to the list of active musicians
                 if (musicianData.getLastActivity() + 5000 >= currentTime) {
-                    activeMusicians.add(musicianData.getMusician());
+                    activeMusicians.add(musicianData);
                 }
             }
 
@@ -60,28 +49,28 @@ public class Auditor {
         }
     }
 
-    private record UDPReceiverStruct(String uuid, String sound) {}
-    record UDPWorker(){
-        public void process(String message){
+    record UDPWorker() {
+        public void process(String message) {
             Gson gson = new Gson();
-            UDPReceiverStruct rcpt = gson.fromJson(message, UDPReceiverStruct.class);
+            MulticastSender.MulticastStruct rcpt = gson.fromJson(message, MulticastSender.MulticastStruct.class);
 
             MusicianData musicianData = musicians.get(rcpt.uuid());
             if (musicianData != null) {
                 musicianData.setLastActivity(System.currentTimeMillis());
             } else {
-                Musician musician = new Musician(rcpt.uuid(), instruments.get(rcpt.sound));
-                musicianData = new MusicianData(musician, System.currentTimeMillis());
-                musicians.put(musician.getUuid(), musicianData);
+                Musician musician = new Musician(rcpt.uuid(), Instrument.fromSound(rcpt.sound())); // TODO CHANGE
 
-                System.out.println("ADD " + musician.getUuid());
+                musicianData = new MusicianData(rcpt.uuid(), Instrument.fromSound(rcpt.sound()), System.currentTimeMillis());
+                musicians.put(musicianData.getUuid(), musicianData);
+
+                System.out.println("ADD " + musicianData.getUuid());
 
                 // Schedule removal after 5 seconds
                 Timer timer = new Timer();
                 timer.schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        cleanMusicians(musician.getUuid());
+                        cleanMusicians(musician.uuid());
                     }
                 }, 5000);
             }
@@ -90,6 +79,7 @@ public class Auditor {
 
     /**
      * Clean the musicians HashMap by removing the inactive ones
+     *
      * @param uuid The uuid of the musician to remove
      */
     public static void cleanMusicians(String uuid) {
@@ -102,7 +92,7 @@ public class Auditor {
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    cleanMusicians(musicianData.getMusician().getUuid());
+                    cleanMusicians(musicianData.getUuid());
                 }
             }, (5000 - (System.currentTimeMillis() - musicianData.getLastActivity())));
         }
@@ -112,16 +102,22 @@ public class Auditor {
      * MusicianData class that contains the musician and its last activity
      */
     private static class MusicianData {
-        private final Musician musician;
+        private final String uuid;
+        private final Instrument instrument;
         private long lastActivity;
 
-        public MusicianData(Musician musician, long lastActivity) {
-            this.musician = musician;
+        public MusicianData(String uuid, Instrument instrument, long lastActivity) {
+            this.uuid = uuid;
+            this.instrument = instrument;
             this.lastActivity = lastActivity;
         }
 
-        public Musician getMusician() {
-            return musician;
+        public String getUuid() {
+            return uuid;
+        }
+
+        public Instrument getInstrument() {
+            return instrument;
         }
 
         public long getLastActivity() {

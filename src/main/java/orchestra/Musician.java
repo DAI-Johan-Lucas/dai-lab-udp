@@ -1,16 +1,12 @@
-package orchestra.musician;
+package orchestra;
 
 import java.util.Objects;
 import java.util.UUID;
 
-public record Musician(String uuid, String instrument) {
+public record Musician(String uuid, Instrument instrument) {
 
-    public Musician(String instrument) {
+    public Musician(Instrument instrument) {
         this(UUID.randomUUID().toString(), instrument);
-    }
-
-    public String getUuid() {
-        return uuid;
     }
 
     @Override

@@ -1,6 +1,4 @@
-package orchestra.auditor;
-
-import orchestra.Logger;
+package orchestra;
 
 import java.io.*;
 import java.net.*;
@@ -26,7 +24,7 @@ public class MulticastReceiver implements Runnable {
 
             // L'auditor rejoint le groupe de multicast pour y recevoir les sons des musiciens
             socket.joinGroup(group_address, netif);
-            Logger.log("SUCCESS", "UDP SERVER joined multicast group: " + IPADDRESS + ":" + PORT + " on interface: " + netif.getName() + " (" + netif.getDisplayName() + ")");
+            Logger.log("SUCCESS", "UDP SERVER joined multicast group: " + IPADDRESS + ":" + PORT + " on interface: " + netif.getName());
 
             try {
                 while (true) {

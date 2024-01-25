@@ -1,6 +1,4 @@
-package orchestra.auditor;
-
-import orchestra.Logger;
+package orchestra;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -24,6 +22,8 @@ public class TCPReceiver implements Runnable {
                 Socket socket = serverSocket.accept();
                 try (socket; var out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), UTF_8)); var in = new BufferedReader(new InputStreamReader(socket.getInputStream(), UTF_8))) {
                     Logger.log("INFO", "TCP SERVER accepted connection from " + socket.getInetAddress() + ":" + socket.getPort() + " on local port " + socket.getLocalPort());
+                    out.write("Welcome to the Orchestra!\n");
+                    out.flush();
 
                     boolean running = true;
                     while (running) {

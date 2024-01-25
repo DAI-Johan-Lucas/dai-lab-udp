@@ -1,13 +1,11 @@
-package orchestra.musician;
+package orchestra;
 
 import com.google.gson.Gson;
-import orchestra.Logger;
 
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.DatagramPacket;
 import java.net.InetSocketAddress;
-import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -17,6 +15,9 @@ class MulticastSender {
     final static String IPADDR = "localhost";
     final static int PORT = 9904;
 
+    public record MulticastStruct(String uuid, String sound) {
+    }
+
     public static void main(String[] args) {
         if (args.length != 1) {
             Logger.log("WARNING", "+ Usage: java MulticastSender <instrument>");
@@ -25,7 +26,7 @@ class MulticastSender {
 
         try {
             // Créer une instance de Musician avec l'instrument spécifié
-            Musician musician = new Musician(args[0].toUpperCase());
+            Musician musician = new Musician(Instrument.valueOf(args[0].toUpperCase()));
 
             Logger.log("SUCCESS", "Musician with a " + args[0] + " created");
             Logger.log("INFO", "Sounds sent :");
@@ -37,7 +38,7 @@ class MulticastSender {
                     try (DatagramSocket socket = new DatagramSocket()) {
                         // Construction du json à envoyer, contenant les informations du musicien
                         Gson gson = new Gson();
-                        String musicianInfo = gson.toJson(musician);
+                        String musicianInfo = gson.toJson(new MulticastStruct(musician.uuid(), musician.instrument().getSound()));
                         byte[] musicianData = musicianInfo.getBytes(UTF_8);
 
                         // Envoyer le message json à l'adresse IP de multicast et au port spécifié
