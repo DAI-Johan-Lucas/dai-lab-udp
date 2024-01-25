@@ -17,7 +17,8 @@ public class MulticastReceiver implements Runnable{
     public void run(){
         Auditor.UDPWorker worker = new Auditor.UDPWorker();
         try (MulticastSocket socket = new MulticastSocket(PORT)) {
-            System.out.println("[INFO] UDP SERVER start listening on PORT:" + PORT + " HOST:" + IPADDRESS);
+            System.out.println("\033[0;34m" + "[INFO]" + "\033[0m"
+                    + " UDP SERVER start listening on PORT:" + PORT + " HOST:" + IPADDRESS);
             var group_address = new InetSocketAddress(IPADDRESS, PORT);
             NetworkInterface netif = NetworkInterface.getByName("loopback_0"); //getByName("eth0");
             socket.joinGroup(group_address, netif);
@@ -32,12 +33,12 @@ public class MulticastReceiver implements Runnable{
                     worker.process(message);
                 }
             } catch (IOException e) {
-                System.err.println("UDP Serveur client: " + e.getMessage());
+                System.err.println("UDP client: " + e.getMessage());
             }finally {
                 socket.leaveGroup(group_address, netif);
             }
-        } catch (IOException ex) {
-            System.out.println(ex);
+        } catch (IOException e) {
+            System.err.println("UDP server: " + e.getMessage());
         }
     }
 }

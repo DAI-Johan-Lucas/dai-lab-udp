@@ -16,7 +16,8 @@ public class TCPReceiver implements Runnable {
     public void run() {
         Auditor.TCPWorker worker = new Auditor.TCPWorker();
         try (var serverSocket = new ServerSocket(PORT)) {
-            System.out.println("[INFO] TCP SERVER start listening on PORT:" + PORT + " HOST:localhost");
+            System.out.println("\033[0;34m" + "[INFO]" + "\033[0m"
+                    + " TCP SERVER start listening on PORT:" + PORT + " HOST:localhost");
             while (true) {
                 Socket socket = serverSocket.accept();
                 try (socket; var out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), UTF_8));
@@ -31,11 +32,11 @@ public class TCPReceiver implements Runnable {
                         }
                     }
                 } catch (IOException e) {
-                    System.err.println("TCP Serveur client: " + e.getMessage());
+                    System.err.println("TCP client: " + e.getMessage());
                 }
             }
         } catch (IOException e) {
-            System.out.println("TCP Serveur server: " + e.getMessage());
+            System.err.println("TCP server: " + e.getMessage());
         }
     }
 }
