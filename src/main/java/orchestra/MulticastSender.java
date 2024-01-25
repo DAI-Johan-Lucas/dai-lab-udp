@@ -12,7 +12,7 @@ import static java.nio.charset.StandardCharsets.*;
 import static orchestra.Logger.LogType.*;
 
 class MulticastSender {
-    final static String IPADDR = "localhost";
+    final static String IPADDR = "239.255.22.5";
     final static int PORT = 9904;
 
     public record MulticastStruct(String uuid, String sound) {
@@ -50,15 +50,8 @@ class MulticastSender {
 
                         socket.send(packet);
 
-                        // Si le compteur atteint 10, effacer la ligne et réinitialiser le compteur
-                        if (soundCount[0] % 8 == 0) {
-                            System.out.print("\r"); // Retour au début de la ligne
-                            System.out.flush(); // Effacer la ligne
-                        }
-
-                        // Afficher le son et incrémenter le compteur
-                        System.out.print(musician.instrument().getSound() + " ");
-                        soundCount[0]++;
+                        // Incrémenter le compteur et afficher le son
+                        System.out.println(++soundCount[0] + ": " + musician.instrument().getSound());
 
                     } catch (IOException e) {
                         Logger.log(ERROR, "UDP client: " + e.getMessage());
