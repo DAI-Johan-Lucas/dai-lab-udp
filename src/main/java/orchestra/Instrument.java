@@ -25,9 +25,4 @@ public enum Instrument {
         }
         return null;
     }
-
-    @Override
-    public String toString() {
-        return name().toLowerCase();
-    }
 }

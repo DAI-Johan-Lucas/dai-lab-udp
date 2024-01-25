@@ -29,7 +29,9 @@ class MulticastSender {
 
             Logger.log("SUCCESS", "Musician with a " + args[0] + " created");
             Logger.log("INFO", "Sounds sent :");
+
             // Créer un Timer pour planifier l'envoi périodique (toutes les secondes)
+            final long[] soundCount = {0};
             Timer timer = new Timer();
             timer.scheduleAtFixedRate(new TimerTask() {
                 @Override
@@ -44,9 +46,17 @@ class MulticastSender {
                         var dest_address = new InetSocketAddress(IPADDR, PORT);
                         var packet = new DatagramPacket(musicianData, musicianData.length, dest_address);
 
-                        // Pour chaque son envoyé, afficher une étoile
                         socket.send(packet);
-                        System.out.print("*");
+
+                        // Si le compteur atteint 10, effacer la ligne et réinitialiser le compteur
+                        if (soundCount[0] % 8 == 0) {
+                            System.out.print("\r"); // Retour au début de la ligne
+                            System.out.flush(); // Effacer la ligne
+                        }
+
+                        // Afficher le son et incrémenter le compteur
+                        System.out.print(musician.instrument().getSound() + " ");
+                        soundCount[0]++;
 
                     } catch (IOException e) {
                         Logger.log("ERROR", "UDP client: " + e.getMessage());
