@@ -40,6 +40,7 @@ class MulticastSender {
                     try (DatagramSocket socket = new DatagramSocket()) {
                         // Construction du json à envoyer, contenant les informations du musicien
                         Gson gson = new Gson();
+                        //String musicianInfo = "{\"uuid\":\"" + musician.uuid() + "\",\"sound\":\"" + musician.instrument().getSound() + "\"}";
                         String musicianInfo = gson.toJson(new MulticastStruct(musician.uuid(), musician.instrument().getSound()));
                         byte[] musicianData = musicianInfo.getBytes(UTF_8);
 

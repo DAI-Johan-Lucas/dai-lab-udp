@@ -21,7 +21,7 @@ public class MulticastReceiver implements Runnable {
             Logger.log(INFO, "UDP SERVER start listening on PORT:" + PORT + " HOST:" + IPADDRESS);
 
             var group_address = new InetSocketAddress(IPADDRESS, PORT);
-            NetworkInterface netif = NetworkInterface.getByName("loopback_0"); //getByName("eth0");
+            NetworkInterface netif = NetworkInterface.getByName("eth0"); //getByName("eth0");
 
             // L'auditor rejoint le groupe de multicast pour y recevoir les sons des musiciens
             socket.joinGroup(group_address, netif);

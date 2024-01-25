@@ -2,8 +2,9 @@ FROM openjdk:21-jdk
 
 WORKDIR /app
 
-COPY ../../target/1.0-auditor.jar /app/
+COPY ../../target/auditor.jar /app/
 
-ENTRYPOINT ["java", "-jar", "/app/1.0-auditor.jar"]
+ENTRYPOINT ["java", "-jar", "/app/auditor.jar"]
 
 # docker build -t dai/auditor -f docker/image-auditor/Dockerfile .
+# docker run -d -p 2205:2205 dai/auditor
