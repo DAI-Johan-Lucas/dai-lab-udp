@@ -29,8 +29,8 @@ echo ""
 echo ""
 echo "*** Rebuilding our 3 Docker images"
 echo ""
-docker build --tag dai/musician --file ./docker/image-musician/Dockerfile ./docker/image-musician/
-docker build --tag dai/auditor --file ./docker/image-auditor/Dockerfile ./docker/image-auditor/
+docker build -t dai/musician -f docker/image-musician/Dockerfile .
+docker build -t dai/auditor -f docker/image-auditor/Dockerfile .
 docker build --tag dai/validate-music --file ./docker/image-validation/Dockerfile ./docker/image-validation/
 
 #
